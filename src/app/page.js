@@ -25,7 +25,7 @@ const Home = () => {
     setLoading(true);
     setError(null);
 
-    const apiUrl = `http://localhost:8080/api/packages`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try {
       // const response = await fetch(apiUrl);
