@@ -25,7 +25,7 @@ const Home = () => {
     setLoading(true);
     setError(null);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiUrl = `expedia-backend-production.up.railway.app/api/packages`;
 
     try {
       // const response = await fetch(apiUrl);
