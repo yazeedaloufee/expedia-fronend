@@ -1,95 +1,76 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import "bootstrap/dist/css/bootstrap.css";
+import axios from "axios";
+import React, { useState } from "react";
+import SearchForm from "../app/components/SearchFrom.components";
+import SearchResults from "../app/components/SerachResults.components";
+import LoadingSpinner from "../app/components/LoadSpinner.components";
+import ErrorAlert from "../app/components/ErrorAlert.components";
 
-export default function Home() {
+const Home = () => {
+  const [originCity, setOriginCity] = useState("");
+  const [destinationCity, setDestinationCity] = useState("");
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!originCity || !destinationCity) {
+      alert("Please fill out both fields");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const apiUrl = `http://localhost:8080/api/packages`;
+
+    try {
+      // const response = await fetch(apiUrl);
+      const response = await axios.get(apiUrl, {
+        params: {
+          origin: originCity,
+          destination: destinationCity,
+        },
+      });
+      console.log(response);
+
+      const offers = response?.data?.offers?.Package;
+      console.log(offers);
+
+      if (offers && offers.length > 0) {
+        setOffers(offers);
+      } else {
+        setError("No results found.");
+        setOffers([]);
+      }
+    } catch (err) {
+      setError("Error fetching data.");
+    }
+
+    setLoading(false);
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="container mt-5">
+      <h1 className="text-center mb-4">Search for Travel Packages</h1>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <SearchForm
+        originCity={originCity}
+        setOriginCity={setOriginCity}
+        destinationCity={destinationCity}
+        setDestinationCity={setDestinationCity}
+        handleSubmit={handleSubmit}
+        loading={loading}
+      />
+
+      <ErrorAlert errorMessage={error} />
+
+      <SearchResults offers={offers} />
     </div>
   );
-}
+};
+
+export default Home;
