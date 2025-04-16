@@ -25,7 +25,7 @@ const Home = () => {
     setLoading(true);
     setError(null);
 
-    const apiUrl = `expedia-backend-production.up.railway.app/api/packages`;
+    const apiUrl = `https://expedia-backend-production.up.railway.app/api/packages`;
 
     try {
       // const response = await fetch(apiUrl);
